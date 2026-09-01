@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Registration — Form Testing Exercise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-top:#FBF8F3;
+    --bg-bottom:#F1EBDE;
+    --card:#FFFFFF;
+    --card-border:#EAE2D0;
+    --ink:#241F16;
+    --ink-soft:#7A7160;
+    --accent:#B4552F;
+    --accent-deep:#8F4324;
+    --accent-soft:#F4DFCB;
+    --teal:#1F6F5C;
+    --error:#D64545;
+    --ring: rgba(180,85,47,.16);
+    --radius:16px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    font-family:'Sarabun', sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    min-height:100vh;
+  }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    max-width:680px; margin:0 auto;
+    padding:22px 20px 0;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand .dot{
+    width:11px; height:11px; border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 4px var(--accent-soft);
+  }
+  .brand span{
+    font-family:'Kanit', sans-serif;
+    font-weight:600;
+    font-size:.98rem;
+    color:var(--ink);
+  }
+  .lang{ display:flex; gap:6px; }
+  .lang button{
+    border:1px solid var(--card-border);
+    background:var(--card);
+    color:var(--ink-soft);
+    font-family:'Sarabun', sans-serif;
+    font-size:.78rem;
+    font-weight:600;
+    padding:5px 11px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+  .lang button.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  .wrap{ max-width:680px; margin:0 auto; padding:18px 20px 70px; }
+
+  .backlink{
+    display:inline-block;
+    font-size:.86rem;
+    color:var(--ink-soft);
+    text-decoration:none;
+    margin:14px 0 22px;
+  }
+  .backlink:hover{ color:var(--accent); }
+
+  .headline h1{
+    font-family:'Kanit', sans-serif;
+    font-weight:600;
+    font-size:1.85rem;
+    line-height:1.25;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .headline p{
+    margin:0 0 26px;
+    color:var(--ink-soft);
+    font-size:1rem;
+    max-width:58ch;
+  }
+
+  .progress-shell{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:999px;
+    height:10px;
+    overflow:hidden;
+    margin-bottom:30px;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--accent) 0%, var(--accent-deep) 100%);
+    border-radius:999px;
+    transition:width .35s ease;
+  }
+  .progress-label{
+    display:flex; justify-content:space-between;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    margin:-24px 0 26px;
+  }
+
+  form{ display:flex; flex-direction:column; gap:14px; }
+
+  .field-card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    box-shadow:0 10px 26px -20px rgba(36,31,22,.35);
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .field-card:focus-within{ border-color:var(--accent); box-shadow:0 0 0 4px var(--ring); }
+  .field-card.invalid{ border-color:var(--error); }
+  .field-card.invalid:focus-within{ box-shadow:0 0 0 4px rgba(214,69,69,.16); }
+
+  .field-card label.title{
+    display:block;
+    font-weight:600;
+    font-size:.94rem;
+    margin-bottom:10px;
+    color:var(--ink);
+  }
+  .req{ color:var(--accent); margin-left:2px; }
+  .hint{ font-weight:400; color:var(--ink-soft); font-size:.82rem; }
+
+  input[type=text], input[type=email], input[type=tel], input[type=date], select, textarea{
+    width:100%;
+    font-family:'Sarabun', sans-serif;
+    font-size:.98rem;
+    padding:10px 2px;
+    border:none;
+    border-bottom:1px solid var(--card-border);
+    background:transparent;
+    color:var(--ink);
+    border-radius:0;
+  }
+  textarea{ resize:vertical; min-height:80px; border:1px solid var(--card-border); border-radius:10px; padding:10px 12px; }
+  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--accent); }
+
+  .error-msg{ display:none; color:var(--error); font-size:.82rem; margin-top:8px; }
+  .field-card.invalid .error-msg{ display:block; }
+
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:560px){ .row2{ grid-template-columns:1fr; } }
+
+  .choice-list{ display:flex; flex-direction:column; gap:2px; }
+  .choice{
+    display:flex; align-items:center; gap:10px;
+    font-size:.94rem;
+    padding:9px 4px;
+    cursor:pointer;
+    border-bottom:1px solid #F4F0E6;
+  }
+  .choice:last-child{ border-bottom:none; }
+  .choice input{ width:17px; height:17px; accent-color:var(--accent); flex:none; }
+
+  .slider-value{
+    font-family:'Kanit', sans-serif;
+    font-weight:600;
+    color:var(--accent-deep);
+    font-size:1.05rem;
+    margin-bottom:10px;
+    display:block;
+  }
+  input[type=range]{ width:100%; accent-color:var(--accent); }
+
+  input[type=file]{ font-family:'Sarabun', sans-serif; font-size:.88rem; width:100%; }
+
+  .agree-card{ display:flex; align-items:flex-start; gap:12px; }
+  .agree-card input{ margin-top:3px; width:18px; height:18px; accent-color:var(--accent); flex:none; }
+  .agree-card .agree-text{ font-size:.92rem; line-height:1.5; }
+
+  .actions{ display:flex; gap:12px; justify-content:flex-end; margin-top:8px; }
+  button.submit-btn, button.clear-btn{
+    font-family:'Sarabun', sans-serif;
+    font-size:.96rem;
+    font-weight:600;
+    padding:13px 26px;
+    border-radius:12px;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:background .15s, transform .1s;
+  }
+  button.submit-btn{ background:var(--accent); color:#fff; }
+  button.submit-btn:hover{ background:var(--accent-deep); }
+  button.submit-btn:active{ transform:translateY(1px); }
+  button.clear-btn{ background:transparent; border-color:var(--card-border); color:var(--ink-soft); }
+  button.clear-btn:hover{ background:#F5F1E7; }
+
+  .footer{
+    max-width:680px; margin:36px auto 0;
+    padding:18px 20px;
+    border-top:1px solid var(--card-border);
+    display:flex; flex-wrap:wrap; gap:14px;
+    justify-content:space-between;
+    font-size:.82rem;
+    color:var(--ink-soft);
+  }
+
+  .success{
+    display:none;
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:40px 32px;
+    text-align:center;
+    box-shadow:0 10px 26px -20px rgba(36,31,22,.35);
+  }
+  .success.show{ display:block; }
+  .success .mark{
+    width:54px; height:54px;
+    border-radius:50%;
+    background:var(--teal);
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 16px;
+    font-size:1.4rem;
+  }
+  .success h2{ font-family:'Kanit', sans-serif; font-weight:600; color:var(--ink); margin:0 0 8px; }
+  .success p{ color:var(--ink-soft); margin:0 0 22px; }
+  .success dl{
+    text-align:left;
+    background:#FBF8F3;
+    border:1px solid var(--card-border);
+    border-radius:12px;
+    padding:16px 20px;
+    margin:0 0 24px;
+    font-size:.92rem;
+  }
+  .success dl div{ display:flex; justify-content:space-between; gap:16px; padding:6px 0; border-bottom:1px dashed var(--card-border); }
+  .success dl div:last-child{ border-bottom:none; }
+  .success dt{ color:var(--ink-soft); }
+  .success dd{ margin:0; font-weight:600; text-align:right; }
+
+  form.hide, .progress-shell.hide, .progress-label.hide{ display:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>QA Testing Lab</span>
+    </div>
+    <div class="lang">
+      <button type="button" class="active">EN</button>
+      <button type="button">TH</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <a class="backlink" href="#">‹ Back to the task description</a>
+
+    <div class="headline">
+      <h1>Register for the Expedition in Search of Eldoria</h1>
+      <p>Student registration form for a QA bug-hunting practice exercise — fill in every field marked with an asterisk (*), then pass this link to a classmate and have them try to break it.</p>
+    </div>
+
+    <div class="progress-shell" id="progressShell">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel"><span>Progress</span><span id="progressPct">0%</span></div>
+
+    <form id="regForm" novalidate>
+
+      <div class="field-card" data-field="studentId">
+        <label class="title" for="studentId">Student ID (8 digits)<span class="req">*</span></label>
+        <input type="text" id="studentId" name="studentId" inputmode="numeric" maxlength="9" placeholder="e.g., 66123456">
+        <div class="error-msg">Enter a valid student ID (8 digits).</div>
+      </div>
+
+      <div class="row2">
+        <div class="field-card" data-field="firstName">
+          <label class="title" for="firstName">First Name (Thai)<span class="req">*</span></label>
+          <input type="text" id="firstName" name="firstName" placeholder="e.g., สมชาย">
+          <div class="error-msg">Enter your first name in Thai script only.</div>
+        </div>
+        <div class="field-card" data-field="lastName">
+          <label class="title" for="lastName">Last Name (Thai)<span class="req">*</span></label>
+          <input type="text" id="lastName" name="lastName" placeholder="e.g., ใจดี">
+          <div class="error-msg">Enter your last name in Thai script only.</div>
+        </div>
+      </div>
+
+      <div class="field-card" data-field="email">
+        <label class="title" for="email">Email<span class="req">*</span></label>
+        <input type="email" id="email" name="email" placeholder="e.g., name@university.ac.th">
+        <div class="error-msg">Enter a valid email address.</div>
+      </div>
+
+      <div class="field-card" data-field="phone">
+        <label class="title" for="phone">Contact Number<span class="req">*</span></label>
+        <input type="tel" id="phone" name="phone" maxlength="10" placeholder="e.g., 0812345678">
+        <div class="error-msg">Enter a 10-digit number starting with 0.</div>
+      </div>
+
+      <div class="field-card" data-field="dob">
+        <label class="title" for="dob">Date of Birth<span class="req">*</span></label>
+        <input type="date" id="dob" name="dob">
+        <div class="error-msg">Choose a valid date of birth (cannot be in the future).</div>
+      </div>
+
+      <div class="field-card">
+        <label class="title" for="experience">Archaeology Experience</label>
+        <select id="experience" name="experience">
+          <option value="">No experience</option>
+          <option value="amateur">Amateur (up to 1 year)</option>
+          <option value="intermediate">Intermediate (1–5 years)</option>
+          <option value="professional">Professional (more than 5 years)</option>
+        </select>
+      </div>
+
+      <div class="field-card">
+        <label class="title">Preferred Role in the Expedition</label>
+        <div class="choice-list">
+          <label class="choice"><input type="checkbox" name="roles" value="researcher"> Researcher</label>
+          <label class="choice"><input type="checkbox" name="roles" value="photographer"> Photographer</label>
+          <label class="choice"><input type="checkbox" name="roles" value="drone"> Drone Operator</label>
+          <label class="choice"><input type="checkbox" name="roles" value="cartographer"> Cartographer</label>
+          <label class="choice"><input type="checkbox" name="roles" value="medic"> Medic</label>
+          <label class="choice"><input type="checkbox" name="roles" value="logistician"> Logistician</label>
+        </div>
+      </div>
+
+      <div class="field-card">
+        <label class="title">Preferred Expedition Region</label>
+        <div class="choice-list">
+          <label class="choice"><input type="radio" name="region" value="south-america"> South America</label>
+          <label class="choice"><input type="radio" name="region" value="africa"> Africa</label>
+          <label class="choice"><input type="radio" name="region" value="asia"> Asia</label>
+          <label class="choice"><input type="radio" name="region" value="europe"> Europe</label>
+          <label class="choice"><input type="radio" name="region" value="australia"> Australia</label>
+        </div>
+      </div>
+
+      <div class="field-card">
+        <label class="title" for="salary">Select your desired salary per week ($)</label>
+        <span class="slider-value" id="salaryValue">$700</span>
+        <input type="range" id="salary" name="salary" min="0" max="2000" step="50" value="700">
+      </div>
+
+      <div class="field-card">
+        <label class="title" for="contactMethod">Preferred Contact Method</label>
+        <select id="contactMethod" name="contactMethod">
+          <option value="email">Email</option>
+          <option value="phone">Phone</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="telegram">Telegram</option>
+        </select>
+      </div>
+
+      <div class="field-card" data-field="idFile">
+        <label class="title" for="idFile">Upload Passport/ID (JPG, PNG, PDF)<span class="req">*</span></label>
+        <input type="file" id="idFile" name="idFile" accept=".jpg,.jpeg,.png,.pdf">
+        <div class="error-msg">Attach a .jpg, .png, or .pdf file no larger than 5MB.</div>
+      </div>
+
+      <div class="field-card">
+        <label class="title" for="comments">Additional Comments</label>
+        <textarea id="comments" name="comments" placeholder="Add any extra details here (optional)"></textarea>
+      </div>
+
+      <div class="field-card agree-card" data-field="agree">
+        <input type="checkbox" id="agree" name="agree">
+        <span class="agree-text">I Agree to Terms and Conditions<span class="req">*</span></span>
+      </div>
+      <div class="error-msg" id="agreeError" style="margin:-6px 4px 0;">Please agree to the Terms and Conditions before submitting.</div>
+
+      <div class="actions">
+        <button type="reset" class="clear-btn" id="clearBtn">Clear Form</button>
+        <button type="submit" class="submit-btn">Submit Registration</button>
+      </div>
+    </form>
+
+    <div class="success" id="successPanel">
+      <div class="mark">✓</div>
+      <h2>Registration Successful</h2>
+      <p>Your information has been recorded.</p>
+      <dl id="summaryList"></dl>
+      <button type="button" class="submit-btn" id="againBtn">Register Again</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>จัดทำโดย: นักศึกษาสาขาวิทยาการคอมพิวเตอร์</span>
+    <span>นายสมชาย คดีใหญ่ 123456789 สาขาวิทยาการคอมพิวเตอร์ คณะวิทยาศาสตร์ มหาวิทยาลัยราชภัฏอุดรธานี</span>
+  </div>
+
+<script>
+(function(){
+  const form = document.getElementById('regForm');
+  const salary = document.getElementById('salary');
+  const salaryValue = document.getElementById('salaryValue');
+  const progressFill = document.getElementById('progressFill');
+  const progressPct = document.getElementById('progressPct');
+  const agreeError = document.getElementById('agreeError');
+
+  const requiredFieldIds = ['studentId','firstName','lastName','email','phone','dob','idFile'];
+
+  // ===============================================================
+  // BUG #1 — Progress bar never resets the "done" counter properly.
+  // When the user clears the form and starts re-filling, the
+  // progress percentage can exceed 100% because `done` is
+  // accumulated with += instead of being recalculated from scratch
+  // on each call (the file input's `files` list is stale after
+  // reset, so it still reports length > 0 for one tick).
+  // FIX NEEDED: reset `done = 0` before the forEach — which IS
+  // present — but the idFile branch checks `el.files.length`
+  // BEFORE the browser clears the FileList on reset, so on the
+  // very next `input` event after clear the count is off by one,
+  // allowing progress to briefly spike to 100% even with an empty
+  // file input.
+  // ===============================================================
+  let extraFileDone = 0; // BUG: leftover counter never zeroed on reset
+
+  function updateProgress(){
+    let done = 0;
+    let total = requiredFieldIds.length + 1; // +1 for agree
+
+    requiredFieldIds.forEach(id => {
+      const el = document.getElementById(id);
+      if(id === 'idFile'){
+        // BUG #1: uses stale extraFileDone instead of el.files.length
+        if(el.files.length || extraFileDone > 0) done++;
+      }
+      else if(el.value.trim() !== '') done++;
+    });
+    if(document.getElementById('agree').checked) done++;
+
+    const pct = Math.round((done/total)*100);
+    progressFill.style.width = pct + '%';
+    progressPct.textContent = pct + '%';
+  }
+
+  form.addEventListener('input', updateProgress);
+  form.addEventListener('change', function(e){
+    // BUG #1 trigger: when a file is picked, increment extraFileDone
+    if(e.target && e.target.id === 'idFile' && e.target.files.length > 0){
+      extraFileDone++;
+    }
+    updateProgress();
+  });
+
+  salary.addEventListener('input', () => {
+    salaryValue.textContent = '$' + Number(salary.value).toLocaleString('en-US');
+  });
+
+  function setState(fieldName, valid){
+    const el = document.querySelector(`.field-card[data-field="${fieldName}"]`);
+    if(!el) return;
+    el.classList.toggle('invalid', !valid);
+  }
+
+  function validateStudentId(){
+    const v = document.getElementById('studentId').value.trim();
+    const ok = /^\d{7,9}$/.test(v);
+    setState('studentId', ok);
+    return ok;
+  }
+
+  const thaiNamePattern = /^[\u0E01-\u0E3A\u0E40-\u0E4E\s]+$/;
+
+  function validateFirstName(){
+    const v = document.getElementById('firstName').value.trim();
+    const ok = v.length > 0 && thaiNamePattern.test(v);
+    setState('firstName', ok);
+    return ok;
+  }
+
+  function validateLastName(){
+    const v = document.getElementById('lastName').value.trim();
+    const ok = v.length > 0 && thaiNamePattern.test(v);
+    setState('lastName', ok);
+    return ok;
+  }
+
+  function validateEmail(){
+    const v = document.getElementById('email').value.trim();
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    setState('email', ok);
+    return ok;
+  }
+
+  // ===============================================================
+  // BUG #2 — Date-of-birth validation uses wrong comparison operator.
+  // The intent is: birth date must be in the PAST (not the future)
+  // AND the person must be at least 15 years old.
+  // However the age check uses `age >= 15` with a floating-point
+  // year calculation. Because of how JavaScript Date subtraction
+  // works, someone born EXACTLY today gets age ≈ 0, which is
+  // correctly rejected. BUT someone who sets their birth date to
+  // TOMORROW (one day in the future) still passes the `date <= now`
+  // guard — because both `date` and `now` are evaluated at midnight
+  // UTC vs. local midnight, so on certain timezones/browsers the
+  // future date slips through and the form submits successfully
+  // with a future date of birth.
+  // FIX NEEDED: compare date.toISOString().slice(0,10) against
+  // today's ISO date string rather than the raw Date objects.
+  // ===============================================================
+  function validateDob(){
+    const v = document.getElementById('dob').value;
+    let ok = false;
+    if(v){
+      const date = new Date(v);
+      const now = new Date();
+      // BUG #2: timezone offset not stripped — future dates can pass on some locales
+      const age = (now - date) / (1000*60*60*24*365.25);
+      ok = date <= now && age >= 15 && age <= 100;
+    }
+    setState('dob', ok);
+    return ok;
+  }
+
+  function validatePhone(){
+    const v = document.getElementById('phone').value.trim();
+    const ok = /^0\d{9}$/.test(v);
+    setState('phone', ok);
+    return ok;
+  }
+
+  function validateFile(){
+    const input = document.getElementById('idFile');
+    const file = input.files[0];
+    let ok = false;
+    if(file){
+      const ext = file.name.split('.').pop().toLowerCase();
+      const validExt = ['jpg','jpeg','png','pdf'].includes(ext);
+      const validSize = file.size <= 5 * 1024 * 1024;
+      ok = validExt && validSize;
+    }
+    setState('idFile', ok);
+    return ok;
+  }
+
+  function validateAgree(){
+    const ok = document.getElementById('agree').checked;
+    const card = document.querySelector('.field-card[data-field="agree"]');
+    card.classList.toggle('invalid', !ok);
+    agreeError.style.display = ok ? 'none' : 'block';
+    return ok;
+  }
+
+  document.getElementById('studentId').addEventListener('input', validateStudentId);
+  document.getElementById('firstName').addEventListener('input', validateFirstName);
+  document.getElementById('lastName').addEventListener('input', validateLastName);
+  document.getElementById('email').addEventListener('input', validateEmail);
+  document.getElementById('phone').addEventListener('input', validatePhone);
+  document.getElementById('dob').addEventListener('change', validateDob);
+  document.getElementById('idFile').addEventListener('change', validateFile);
+  document.getElementById('agree').addEventListener('change', validateAgree);
+
+  function showSummary(){
+    const rolesChecked = Array.from(document.querySelectorAll('input[name="roles"]:checked')).map(r => r.parentElement.textContent.trim());
+    const region = document.querySelector('input[name="region"]:checked');
+    const experienceSelect = document.getElementById('experience');
+    const contactSelect = document.getElementById('contactMethod');
+
+    const rows = [
+      ['Student ID', document.getElementById('studentId').value.trim()],
+      ['Full Name', document.getElementById('firstName').value.trim() + ' ' + document.getElementById('lastName').value.trim()],
+      ['Email', document.getElementById('email').value.trim()],
+      ['Contact Number', document.getElementById('phone').value.trim()],
+      ['Archaeology Experience', experienceSelect.options[experienceSelect.selectedIndex].text],
+      ['Preferred Role', rolesChecked.join(', ') || '-'],
+      ['Preferred Region', region ? region.parentElement.textContent.trim() : '-'],
+      ['Desired Salary', '$' + Number(salary.value).toLocaleString('en-US') + ' / week'],
+      ['Preferred Contact Method', contactSelect.options[contactSelect.selectedIndex].text]
+    ];
+
+    const dl = document.getElementById('summaryList');
+    dl.innerHTML = rows.map(([k,v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const validStudentId = validateStudentId();
+    const validFirstName = validateFirstName();
+    const validLastName = validateLastName();
+    const validEmail = validateEmail();
+    const validPhone = validatePhone();
+    const validDob = validateDob();
+    const validFile = validateFile();
+    validateAgree();
+
+    const allValid = validStudentId && validFirstName && validLastName &&
+                      validEmail && validPhone && validDob && validFile;
+
+    if(allValid){
+      showSummary();
+      form.classList.add('hide');
+      document.getElementById('progressShell').classList.add('hide');
+      document.getElementById('progressLabel').classList.add('hide');
+      document.getElementById('successPanel').classList.add('show');
+      window.scrollTo({top:0, behavior:'smooth'});
+    } else {
+      const firstInvalid = document.querySelector('.field-card.invalid');
+      if(firstInvalid) firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    setTimeout(() => {
+      // BUG #1: extraFileDone is NOT reset here, so file progress persists
+      document.querySelectorAll('.field-card.invalid').forEach(f => f.classList.remove('invalid'));
+      agreeError.style.display = 'none';
+      salaryValue.textContent = '$700';
+      updateProgress();
+    }, 0);
+  });
+
+  document.getElementById('againBtn').addEventListener('click', function(){
+    form.reset();
+    extraFileDone = 0; // reset only on "Register Again", not on "Clear Form" — inconsistency
+    document.querySelectorAll('.field-card.invalid').forEach(f => f.classList.remove('invalid'));
+    agreeError.style.display = 'none';
+    salaryValue.textContent = '$700';
+    form.classList.remove('hide');
+    document.getElementById('progressShell').classList.remove('hide');
+    document.getElementById('progressLabel').classList.remove('hide');
+    document.getElementById('successPanel').classList.remove('show');
+    updateProgress();
+  });
+
+  updateProgress();
+})();
+</script>
+
+</body>
+</html>
